@@ -98,6 +98,7 @@ function init() {
             } else {
                 var pos = viewer.scene.globalToRos(event.stageX, event.stageY);
                 navGoal.startGoalSelection(pos);
+                // console.log("mousedown");
             }
             startPos.x = event.stageX;
             startPos.y = event.stageY;
@@ -130,6 +131,25 @@ function init() {
                     var pos = viewer.scene.globalToRos(event.stageX, event.stageY);
                     var goalPose = navGoal.endGoalSelection(pos);
                     navGoal.sendGoal(goalPose);
+
+                    // var movebaseClient = new ROSLIB.ActionClient({
+                    //     ros: ros,
+                    //     serverName: "/move_base",
+                    //     actionName: "move_base_msgs/MoveBaseAction",
+                    // });
+                    // var goalMsg = new ROSLIB.Message({
+                    //     target_pose:{
+                    //         header:{
+                    //             frame_id:this.mapFrame
+                    //         },
+                    //         pose:pos
+                    //     }
+                    // });
+                    // var goalPose = new ROSLIB.Goal({
+                    //     actionClient : movebaseClient,
+                    //     goalMessage : goalMsg
+                    // });
+                    // goalPose.send();
                 }
                 mouseDown = false;
             }

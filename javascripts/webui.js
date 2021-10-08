@@ -10,6 +10,7 @@ var movebaseClient;
 var goalMsg;
 var btnGo;
 var btnBack;
+var btnStop;
 
 function moveAction(linear, angular) {
     if (linear !== undefined && angular !== undefined) {
@@ -120,16 +121,21 @@ function initMoveBaseClient() {
     });
     btnGo = document.getElementById("btnGo");
     btnBack = document.getElementById("btnBack");
+    btnStop = document.getElementById("btnStop");
     // btnGo.addEventListener('click',sendGoal(3.85,7.68,0.707,0.707));
     // btnBack.addEventListener('click',sendGoal(3.85,-5.90,0.707,0.707));
 
     btnGo.addEventListener("click", function (event) {
         movebaseClient.cancel();
-        sendGoal(3.85, 7.68, 0.707, 0.707);
+        sendGoal(13.7, 2.0, 0.707, 0.707);
     });
     btnBack.addEventListener("click", function (event) {
         movebaseClient.cancel();
-        sendGoal(3.85, -5.9, 0.707, 0.707);
+        sendGoal(0.00, 0.00, 0.00, 1.00);
+    });
+
+    btnStop.addEventListener("click", function (event) {
+        movebaseClient.cancel();
     });
 }
 

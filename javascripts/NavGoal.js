@@ -13,20 +13,20 @@
  *   * actionMsgType (optional) - the navigation action message type, like 'move_base_msgs/MoveBaseAction'
  *   * mapFrame (optional) - the frame of the map to use when sending a goal, like '/map'
  */
- ROS2D.NavGoal = function(options) {
+ROS2D.NavGoal = function (options) {
 	var that = this;
 	options = options || {};
 	var ros = options.ros;
 	this.rootObject = options.rootObject || new createjs.Container();
-	var actionTopic = options.actionTopic || '/move_base';
-	var actionMsgType = options.actionMsgType || 'move_base_msgs/MoveBaseAction';
-	this.mapFrame = options.mapFrame || '/map';
+	var actionTopic = options.actionTopic || "/move_base";
+	var actionMsgType = options.actionMsgType || "move_base_msgs/MoveBaseAction";
+	this.mapFrame = options.mapFrame || "/map";
 
 	// setup the actionlib client
 	this.actionClient = new ROSLIB.ActionClient({
-		ros : ros,
-		actionName : actionMsgType,
-		serverName : actionTopic
+		ros: ros,
+		actionName: actionMsgType,
+		serverName: actionTopic,
 	});
 
 	// get a handle to the stage
@@ -41,10 +41,10 @@
 
 	// marker for goal orientation
 	this.goalOrientationMarker = new ROS2D.ArrowShape({
-		size : 30,
-		strokeSize : 1,
-		fillColor : createjs.Graphics.getRGB(0, 255, 0, 0.66),
-		pulse : false
+		size: 30,
+		strokeSize: 1,
+		fillColor: createjs.Graphics.getRGB(0, 255, 0, 0.66),
+		pulse: false,
 	});
 	this.goalOrientationMarker.visible = false;
 	this.container.addChild(this.goalOrientationMarker);
@@ -55,13 +55,12 @@
 	this.initScaleSet = false;
 };
 
-
 /**
  * Initialize scale, current scale will be used for the goal markers
  */
-ROS2D.NavGoal.prototype.initScale = function() {
+ROS2D.NavGoal.prototype.initScale = function () {
 	if (this.initScaleSet) {
-		console.log('Warning: scale has already been initialized!');
+		console.log("Warning: scale has already been initialized!");
 		// TODO: reinit
 	}
 	this.initScaleSet = true;
@@ -69,13 +68,12 @@ ROS2D.NavGoal.prototype.initScale = function() {
 	this.initScaleY = 1.0 / this.stage.scaleY;
 };
 
-
 /**
  * Start goal selection, given position will be the goal position, draw the orientation marker
  *
  * @param pos - current selection position on the map in meters (ROSLIB.Vector3)
  */
-ROS2D.NavGoal.prototype.startGoalSelection = function(pos) {
+ROS2D.NavGoal.prototype.startGoalSelection = function (pos) {
 	this.goalStartPos = pos;
 	this.goalOrientationMarker.visible = true;
 	this.goalOrientationMarker.scaleX = 1.0 / this.stage.scaleX;
@@ -89,12 +87,12 @@ ROS2D.NavGoal.prototype.startGoalSelection = function(pos) {
  *
  * @param pos - current selection position on the map in meters (ROSLIB.Vector3)
  */
-ROS2D.NavGoal.prototype.orientGoalSelection = function(pos) {
+ROS2D.NavGoal.prototype.orientGoalSelection = function (pos) {
 	this.goalOrientationMarker.scaleX = 1.0 / this.stage.scaleX;
 	this.goalOrientationMarker.scaleY = 1.0 / this.stage.scaleY;
 	var dx = pos.x - this.goalStartPos.x;
 	var dy = pos.y - this.goalStartPos.y;
-	this.goalOrientationMarker.rotation = -Math.atan2(dy, dx) * 180.0 / Math.PI;
+	this.goalOrientationMarker.rotation = (-Math.atan2(dy, dx) * 180.0) / Math.PI;
 };
 
 /**
@@ -104,26 +102,25 @@ ROS2D.NavGoal.prototype.orientGoalSelection = function(pos) {
  *
  * @returns the goal pose (ROSLIB.Pose)
  */
-ROS2D.NavGoal.prototype.endGoalSelection = function() {
+ROS2D.NavGoal.prototype.endGoalSelection = function () {
 	this.goalOrientationMarker.visible = false;
 
 	// Get angle from orientation marker, so that the goal always matches with the marker
 	// convert to radians and counter clock wise
-	var theta = -this.goalOrientationMarker.rotation * Math.PI / 180.0;
-	var qz =  Math.sin(theta/2.0);
-	var qw =  Math.cos(theta/2.0);
+	var theta = (-this.goalOrientationMarker.rotation * Math.PI) / 180.0;
+	var qz = Math.sin(theta / 2.0);
+	var qw = Math.cos(theta / 2.0);
 	var quat = new ROSLIB.Quaternion({
-		x : 0,
-		y : 0,
-		z : qz,
-		w : qw
+		x: 0,
+		y: 0,
+		z: qz,
+		w: qw,
 	});
 	return new ROSLIB.Pose({
-		position : this.goalStartPos,
-		orientation : quat
+		position: this.goalStartPos,
+		orientation: quat,
 	});
 };
-
 
 /**
  * Send a goal to the navigation stack with the given pose.
@@ -131,28 +128,39 @@ ROS2D.NavGoal.prototype.endGoalSelection = function() {
  *
  * @param pose - the goal pose (ROSLIB.Pose)
  */
-ROS2D.NavGoal.prototype.sendGoal = function(pose) {
+ROS2D.NavGoal.prototype.sendGoal = function (pose) {
 	// create a goal
+	// var goalMsg = new ROSLIB.Message({
+	// 	target_pose:{
+	// 		header:{
+	// 			frame_id:this.mapFrame
+	// 		},
+	// 		pose:pose
+	// 	}
+	// });
+	// goalMessage : goalMsg
+
 	var goal = new ROSLIB.Goal({
-		actionClient : this.actionClient,
-		goalMessage : {
-			target_pose : {
-				header : {
-					frame_id : this.mapFrame,
-                    // stamp: Date.now()
+		actionClient: this.actionClient,
+		goalMessage: {
+			target_pose: {
+				header: {
+					frame_id: this.mapFrame,
+					// stamp: Date.now()
 				},
-				pose : pose
-			}
-		}
+				pose: pose,
+			},
+		},
 	});
 	goal.send();
+	console.dir(goal);
 
 	// create a marker for the goal
 	var goalMarker = new ROS2D.ArrowShape({
-		size : 10,
-		strokeSize : 1,
-		fillColor : createjs.Graphics.getRGB(255, 64, 128, 0.66),
-		pulse : true
+		size: 10,
+		strokeSize: 1,
+		fillColor: createjs.Graphics.getRGB(255, 64, 128, 0.66),
+		pulse: true,
 	});
 	goalMarker.x = pose.position.x;
 	goalMarker.y = -pose.position.y;
@@ -162,7 +170,7 @@ ROS2D.NavGoal.prototype.sendGoal = function(pose) {
 	this.container.addChild(goalMarker);
 
 	var that = this;
-	goal.on('result', function() {
+	goal.on("result", function () {
 		that.container.removeChild(goalMarker);
 	});
 };
