@@ -63,7 +63,7 @@ function init() {
     var navGoal = new ROS2D.NavGoal({
         ros: ros,
         rootObject: viewer.scene,
-        actionTopic: "/move_base"
+        // actionTopic: "/move_base"
     });
 
     // Scale the canvas to fit to the map

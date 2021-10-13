@@ -210,7 +210,7 @@ function init() {
     video.src =
         "http://" +
         robot_IP +
-        ":8080/stream?topic=/camera/rgb/image_raw&type=mjpeg&quality=80";
+        ":8080/stream?topic=/usb_cam/image_raw";
     video.onload = function () {
         // joystick and keyboard controls will be available only when video is correctly loaded
         // createJoystick();
