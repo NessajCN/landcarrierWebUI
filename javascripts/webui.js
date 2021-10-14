@@ -91,9 +91,9 @@ function createJoystick() {
                 direction = -(450 - nipple.angle.degree);
             }
             // convert angles to radians and scale linear and angular speed
-            // adjust if youwant robot to drvie faster or slower
+            // adjust if you want robot to drive faster or slower
             var lin = Math.cos(direction / 57.29) * nipple.distance * 0.005;
-            var ang = Math.sin(direction / 57.29) * nipple.distance * 0.05;
+            var ang = Math.sin(direction / 57.29) * nipple.distance * 0.005;
             // nipplejs is triggering events when joystic moves each pixel
             // we need delay between consecutive messege publications to
             // prevent system from being flooded by messages
